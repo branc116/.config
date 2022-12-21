@@ -7,9 +7,8 @@ set expandtab
 set number
 set relativenumber
 
-call plug#begin("/mnt/b/nvim")
+call plug#begin()
 
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ervandew/supertab'
 Plug 'preservim/nerdtree'
 Plug 'JuliaEditorSupport/julia-vim'
