@@ -72,12 +72,43 @@ vim.keymap.set("n", "<C-L>", "<cmd>wincmd l<cr>")
 vim.keymap.set("n", "<C-h>", "<cmd>wincmd h<cr>")
 vim.keymap.set("n", "<C-q>", "<cmd>bd<cr><cmd>bnext<cr>")
 
-vim.keymap.set('n', '<leader>ff', telescopebuiltin.find_files, {})
+local last_qf_move = 0;
+vim.keymap.set("n", "]q", function()
+  last_qf_move = 0;
+  vim.cmd[[cn]];
+end)
+
+vim.keymap.set("n", "[q", function()
+  last_qf_move = 1;
+  vim.cmd[[cp]];
+end)
+
+vim.keymap.set("n", "Q", function()
+  if (last_qf_move == 0) then
+    vim.cmd[[cn]];
+  else
+    vim.cmd[[cp]];
+  end
+end)
+
+vim.keymap.set('n', '<leader>ff', "<cmd>FZF<cr>")
 vim.keymap.set('n', '<C-p>', telescopebuiltin.git_files, {})
 vim.keymap.set('n', '<leader>fs', function()
   telescopebuiltin.grep_string({ search = vim.fn.input("Grep > ") });
 end)
+vim.keymap.set('n', '<leader>fS', function()
+  vim.cmd[[norm "oyiw]]
+  telescopebuiltin.grep_string({ search =  vim.fn.getreg("o") });
+end)
+vim.keymap.set('v', '<leader>f', function()
+  vim.cmd[[norm "oy]]
+  telescopebuiltin.grep_string({ search =  vim.fn.getreg("o") });
+end)
 vim.keymap.set('n', '<leader>b', telescopebuiltin.buffers, {})
+vim.keymap.set('n', '<leader><leader>', "<cmd>Telescope resume<cr>")
+vim.keymap.set('n', '<leader>s', "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>")
+vim.keymap.set('n', '<leader>m', "<cmd>Telescope man_pages<cr>")
+vim.keymap.set('n', '<leader>fh', "<cmd>Telescope help_tags<cr>")
 
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 vim.keymap.set("n", "<leader>nt", vim.cmd.NERDTreeToggle)
@@ -96,24 +127,12 @@ vim.keymap.set("n", "<leader>rr", "<cmd>lua vim.lsp.buf.rename()<cr>")
 vim.keymap.set("n", "<C-`>", "<cmd>lua vim.lsp.buf.code_action()<cr>")
 
 
-vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>",
-{silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>",
-{silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",
-{silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>",
-{silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>q", "<cmd>TroubleToggle quickfix<cr>",
-{silent = true, noremap = true}
-)
-vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>",
-{silent = true, noremap = true}
-)
+vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", {silent = true, noremap = true})
+vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", {silent = true, noremap = true})
+vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", {silent = true, noremap = true})
+vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", {silent = true, noremap = true})
+vim.keymap.set("n", "<leader>q", "<cmd>TroubleToggle quickfix<cr>", {silent = true, noremap = true})
+vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", {silent = true, noremap = true})
 
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
@@ -168,7 +187,7 @@ require'nvim-treesitter.configs'.setup {
       scope_incremental = "grc",
       node_decremental = "grm",
     },
-  }, 
+  },
   textobjects = {
     select = {
       enable = true,
